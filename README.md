@@ -1,2 +1,2 @@
 # DrawingBoard
-画板 + 图片处理工具
+canvas 画板 + 图片处理工具
