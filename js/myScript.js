@@ -35,6 +35,7 @@ canvas.height = window.innerHeight;
 var position = {x: 0, y: window.innerHeight/2};
 var mouse = {x: 0, y: 0, down: false};
 
+
 if(canvas.getContext) {
     var context = canvas.getContext("2d");
 
@@ -43,10 +44,11 @@ if(canvas.getContext) {
     canvas.addEventListener("mouseup", mouseup, false);
 
 //监听可视窗口尺寸
-    window.onresize = function (event) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    };
+//    window.onresize = function (event) {
+//        console.log(window.innerWidth+" "+window.innerHeight)
+//        canvas.width = window.innerWidth;
+//        canvas.height = window.innerHeight;
+//    };
 
     function distance(pt, pt2) {
         var xs = 0;
@@ -62,37 +64,40 @@ if(canvas.getContext) {
         if (mouse.down) {
             var d = distance(position, mouse);
             if (d >= 1) {
-                var offest = $(canvas).offset(); // 并不是很有用
                 var $canvas = $(canvas);
                 context.beginPath();
                 context.lineCap = "round";
                 context.strokeStyle = $(".colors").css("background-color");
-                console.log($(".sizes").find("div:first-child").width());
-                context.lineWidth = 20;
-                context.moveTo(position.x , position.y);
-                //context.arc(mouse.x, mouse.y, $(".sizes").find("div:first-child").width(), 0, 2*Math.PI);
-                context.lineTo(mouse.x - canvas.offsetLeft, mouse.y - canvas.offsetTop);
+                var chosenSvg = $(".sizes").find("svg").get(0);
+                console.log(chosenSvg.getBoundingClientRect().width);
+                context.lineWidth = chosenSvg.getBoundingClientRect().width;
+                var $offest = $(canvas).offset(); // 并不是很有用
+                var docScrollLeft = document.documentElement.scrollLeft;
+                var docScrollTop = document.documentElement.scrollTop;
+                context.moveTo(position.x - $offest.left + docScrollLeft, position.y - $offest.top + docScrollTop);
+                context.lineTo(mouse.x - $offest.left + docScrollLeft, mouse.y - $offest.top + docScrollTop);
+
                 context.stroke();
                 //context.fill();
                 context.closePath();
                 position.x = mouse.x;
                 position.y = mouse.y;
-                draw();
+                //draw();
             }
         }
     }
 
     function mousemove(event) {
         //console.log(canvas.offsetLeft);
-        mouse.x = event.pageX - canvas.offsetLeft;
-        mouse.y = event.pageY - canvas.offsetTop;
+        mouse.x = event.clientX;
+        mouse.y = event.clientY;
         draw();
     }
 
     function mousedown(event) {
         mouse.down = true;
-        position.x = event.pageX - canvas.offsetLeft;
-        position.y = event.pageY - canvas.offsetTop;
+        position.x = event.clientX;
+        position.y = event.clientY;
     }
 
     function mouseup() {
